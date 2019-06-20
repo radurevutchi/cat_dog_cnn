@@ -6,6 +6,14 @@ from keras.layers import Conv2D # 2D Conv. layer (3D used for video and time dim
 from keras.layers import MaxPooling2D # max pooling step
 from keras.layers import Flatten # flattens 2D images/2d arrays to a vector
 from keras.layers import Dense
+from keras.models import model_from_json
+from keras.models import load_model
+from keras.preprocessing.image import ImageDataGenerator
+
+
+# making predictions
+import numpy as np
+from keras.preprocessing import image
 
 
 # creates sequential NN object
@@ -62,7 +70,44 @@ training_set = train_datagen.flow_from_directory('training_set',
                                                 batch_size=32,
                                                 class_mode='binary')
 
-teset_set = test_datagen.flow_from_directory('test_set',
+test_set = test_datagen.flow_from_directory('test_set',
                                                 target_size=(64,64),
                                                 batch_size=32,
                                                 class_mode='binary')
+
+
+
+print("TRAINING MODEL")
+# steps_per_epoch is number of training imgages
+classifier.fit_generator(training_set,
+                            steps_per_epoch=1589,
+                            epochs=4,
+                            validation_data=test_set,
+                            validation_steps=380)
+
+
+
+print("TESTING MODEL")
+# saving the model and weights
+classifier_json = classifier.to_json()
+with open("model1.json", "w") as json_file:
+    json_file.write(classifier_json)
+
+classifier.save_weights("model1.h5")
+
+
+# testing an image
+test_image = image.load_img('my_set/cat1.jpg',
+                            target_size=(64,64))
+test_image = image.img_to_array(test_image)
+test_image = np.expand_dims(test_image, axis=0)
+result = classifier.predict(test_image)
+training_set.class_indices
+
+if result[0][0] == 1:
+    prediction = 'dog'
+else:
+    prediction = 'cat'
+
+
+print("This classifier predicted: " + prediction)
