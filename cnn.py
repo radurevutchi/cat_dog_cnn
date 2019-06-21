@@ -1,13 +1,9 @@
-
-
-
 from keras.models import Sequential # initializes NN as sequanential
 from keras.layers import Conv2D # 2D Conv. layer (3D used for video and time dimension)
 from keras.layers import MaxPooling2D # max pooling step
 from keras.layers import Flatten # flattens 2D images/2d arrays to a vector
 from keras.layers import Dense
-from keras.models import model_from_json
-from keras.models import load_model
+from keras.models import model_from_json, load_model
 from keras.preprocessing.image import ImageDataGenerator
 
 
@@ -16,6 +12,7 @@ import numpy as np
 from keras.preprocessing import image
 
 
+'''
 # creates sequential NN object
 classifier = Sequential()
 
@@ -87,7 +84,7 @@ classifier.fit_generator(training_set,
 
 
 
-print("TESTING MODEL")
+
 # saving the model and weights
 classifier_json = classifier.to_json()
 with open("model1.json", "w") as json_file:
@@ -95,19 +92,45 @@ with open("model1.json", "w") as json_file:
 
 classifier.save_weights("model1.h5")
 
+'''
 
+# loading the model and weights
+
+with open("model1.json",'r') as json_file:
+    classifier = model_from_json(json_file.read())
+
+classifier.load_weights("model1.h5")
+
+
+
+
+
+
+print("TESTING MODEL")
 # testing an image
-test_image = image.load_img('my_set/cat1.jpg',
-                            target_size=(64,64))
-test_image = image.img_to_array(test_image)
-test_image = np.expand_dims(test_image, axis=0)
-result = classifier.predict(test_image)
-training_set.class_indices
 
-if result[0][0] == 1:
-    prediction = 'dog'
-else:
-    prediction = 'cat'
+for i in range(1,5):
+    test_image = image.load_img("my_set/cats/cat" +str(i) + ".jpg",
+                                target_size=(64,64))
+    test_image = image.img_to_array(test_image)
+    test_image = np.expand_dims(test_image, axis=0)
+    result = classifier.predict(test_image)
 
+    if result[0][0] == 1:
+        prediction = 'dog'
+    else:
+        prediction = 'cat'
+    print("This classifier predicted: " + prediction)
 
-print("This classifier predicted: " + prediction)
+for i in range(1,5):
+    test_image = image.load_img("my_set/dogs/dog" +str(i) + ".jpg",
+                                target_size=(64,64))
+    test_image = image.img_to_array(test_image)
+    test_image = np.expand_dims(test_image, axis=0)
+    result = classifier.predict(test_image)
+
+    if result[0][0] == 1:
+        prediction = 'dog'
+    else:
+        prediction = 'cat'
+    print("This classifier predicted: " + prediction)
