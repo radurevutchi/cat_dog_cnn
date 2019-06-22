@@ -12,7 +12,7 @@ import numpy as np
 from keras.preprocessing import image
 
 
-'''
+
 # creates sequential NN object
 classifier = Sequential()
 
@@ -78,7 +78,7 @@ print("TRAINING MODEL")
 # steps_per_epoch is number of training imgages
 classifier.fit_generator(training_set,
                             steps_per_epoch=1589,
-                            epochs=4,
+                            epochs=6,
                             validation_data=test_set,
                             validation_steps=380)
 
@@ -91,6 +91,8 @@ with open("model1.json", "w") as json_file:
     json_file.write(classifier_json)
 
 classifier.save_weights("model1.h5")
+
+
 
 '''
 
@@ -109,7 +111,7 @@ classifier.load_weights("model1.h5")
 print("TESTING MODEL")
 # testing an image
 
-for i in range(1,5):
+for i in range(1,6):
     test_image = image.load_img("my_set/cats/cat" +str(i) + ".jpg",
                                 target_size=(64,64))
     test_image = image.img_to_array(test_image)
@@ -134,3 +136,5 @@ for i in range(1,5):
     else:
         prediction = 'cat'
     print("This classifier predicted: " + prediction)
+
+'''
